@@ -1,0 +1,13 @@
+-- vim:set ft=lua:
+function CsrfToken(m,t)
+  m=(m or mg.script_name:match('[^\\/]*$'):lower())..'/legacy/'..(math.floor(os.time()/3600/12)+(t or 0))
+  local kip,kop=('\54'):rep(48),('\92'):rep(48)
+  for k in edcb.serverRandom:sub(1,32):gmatch('..') do
+    kip=string.char(bit32.bxor(tonumber(k,16),54))..kip
+    kop=string.char(bit32.bxor(tonumber(k,16),92))..kop
+  end
+  --HMAC-MD5(hex)
+  return mg.md5(kop..mg.md5(kip..m))
+end
+mg.write('HTTP/1.0 200 OK\r\nContent-Type: text/html\r\n\r\n')
+mg.write(CsrfToken('setreserve'))
