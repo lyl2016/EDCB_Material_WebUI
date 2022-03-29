@@ -75,9 +75,9 @@ for i,v in ipairs(CustomServiceList()) do
       maxTime=maxTime and os.time(mmt.maxTime)<maxTime and maxTime or os.time(mmt.maxTime)
     end
     --表示範囲の番組だけ取得する
-    st[#st].et=edcb.EnumEventInfo({{onid=v.onid, tsid=v.tsid, sid=v.sid}}, {startTime=os.date('!*t',pageTime-6*3600), durationSecond=(interval+6)*3600}) or {}
+    st[#st].et=edcb.EnumEventInfo({{onid=v.onid, tsid=v.tsid, sid=v.sid}}, {startTime=os.date('!*t',pageTime-24*3600), durationSecond=(interval+24)*3600}) or {}
     for j,w in ipairs(edcb.EnumEventInfoArchive and
-        edcb.EnumEventInfoArchive({{onid=v.onid, tsid=v.tsid, sid=v.sid}}, {startTime=os.date('!*t',pageTime-6*3600), durationSecond=(interval+6)*3600}) or {}) do
+        edcb.EnumEventInfoArchive({{onid=v.onid, tsid=v.tsid, sid=v.sid}}, {startTime=os.date('!*t',pageTime-24*3600), durationSecond=(interval+24)*3600}) or {}) do
       w.past=true
       table.insert(st[#st].et, w)
     end
@@ -331,15 +331,16 @@ ct.main='<main class="sidePanel-container mdl-layout__content">\n'
     ct.main=ct.main..'<div id="H'..i..'" class="hour t'..j..'"><tt>'..(j==4 and Date.day~=d.day and d.day..'日' or '')..(j<4 and j+24 or j)..'時</tt></div>\n'
   end
 ct.main=ct.main..(NOW and '<div id="line"><span></span></div>' or '')..'</div>\n'
-  ..table.concat(ctt)
-  ..'</div>\n</div></div>\n'
 
+table.insert(ctt, '</div>\n</div></div>\n'
   ..'<form id="autoepg" method="POST" target="_blank" action="autoaddepginfo.html?epg=&amp;tab='..tab..'&amp;date='..date..(hour>=0 and '&amp;hour='..hour or '')..(interval~=25 and '&amp;interval='..interval or '')..(pageIndex~=0 and '&amp;chpage='..pageIndex or '')..(CH_COUNT~=DEF_CH_COUNT and '&amp;chcount='..CH_COUNT or '')..'">\n'
   ..'<input type="hidden" name="ctok" value="'..CsrfToken('autoaddepginfo.html')..'">\n'
   ..'<input type="hidden" name="andKey">\n'
   ..'<input type="hidden" name="serviceList">\n'
-  ..'</form>\n'
+  ..'</form>\n')
 
+ctt[1]=ct.main..ctt[1]
+ct.main=table.concat(ctt)
 
 ct=template(ct)
 

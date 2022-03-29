@@ -13,9 +13,9 @@ if onair then
   --放送中
   now=os.time()
   if not startTime then
-    startTime=os.date('*t',now-12*3600)
+    startTime=os.date('*t',now-24*3600)
   end
-  durationSecond=mg.get_var(mg.request_info.query_string,'duration') or 24*3600
+  durationSecond=mg.get_var(mg.request_info.query_string,'duration') or 48*3600
 
   b=edcb.EnumEventInfo({key},{startTime=startTime, durationSecond=durationSecond})
 
@@ -159,4 +159,6 @@ cl=0
 for i,v in ipairs(ct) do cl=cl+#v end
 dofile(mg.document_root..'\\api\\util.lua')
 mg.write(Response(200, 'text/xml', 'utf-8', cl) ..'\r\n')
-for i,v in ipairs(ct) do mg.write(v) end
+if mg.request_info.request_method~='HEAD' then
+  for i,v in ipairs(ct) do mg.write(v) end
+end
